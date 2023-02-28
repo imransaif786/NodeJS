@@ -1,24 +1,27 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const morgan = require('morgan')
+const cors = require('cors')
 mongoose.connect("mongodb://127.0.0.1:27017/product");
 const Product = require('./product');
 const app = express();
+app.use(morgan('tiny'));
 
 app.use(express.json())
-
-app.get('/list', async (req, resp) => {
+app.use(cors());
+app.get('/', async (req, resp) => {
     let data = await Product.find();
     resp.send(data);
 });
 
-app.post('/create', async (req, resp) => {
+app.post('/', async (req, resp) => {
     let data = new Product(req.body)
     let result = await data.save()
     console.log(req.body)
     resp.send('done')
 });
 
-app.put('/update/:_id', async (req, resp) => {
+app.put('/:_id', async (req, resp) => {
     let data = await Product.updateOne(
         req.params,
         {
@@ -27,7 +30,7 @@ app.put('/update/:_id', async (req, resp) => {
     resp.send(data);
 });
 
-app.delete('/delete/:_id', async (req, resp) => {
+app.delete('/:_id', async (req, resp) => {
     let data = await Product.deleteOne(req.params);
     resp.send("done");
 });
